@@ -1,3 +1,5 @@
+[2012-11-11] Version 1.3
+* Added NuSOAP fix for Prestashop 1.5
 [2012-01-07] Version 1.2
 * README translated to English
 * Mails translated to French
