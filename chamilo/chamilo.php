@@ -25,7 +25,7 @@ class chamilo extends Module
          
         $this->name                 = 'chamilo';
         $this->tab                  = 'Tools';
-        $this->version              = "0.1";        
+        $this->version              = "1.3";
         $this->wsdl                 = $this->chamilo_url.'main/webservices/registration.soap.php?wsdl';        
         $this->debug                = false;
         
@@ -34,7 +34,7 @@ class chamilo extends Module
         
         /* The parent construct is required for translations */
         $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('Chamilo 1.8.x Module');
+        $this->displayName = $this->l('Chamilo 1.9.x Module');
         $this->description = $this->l('Let users buy Chamilo courses in your PS platform!');
     }
     
