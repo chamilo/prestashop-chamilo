@@ -1,4 +1,3 @@
-/* For licensing terms, see /license.txt */
 Instructions to install the Prestashop-Chamilo module
 
 Prerequisites
