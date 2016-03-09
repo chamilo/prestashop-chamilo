@@ -257,29 +257,16 @@ class PrestashopChamilo extends Module
     }
 
     /**
-     * @param $params
+     * @param array $params
      * @return mixed
      */
     public function hookHome($params)
     {
-		global $smarty;
-		/*$category = new Category(1);
-		$nb = intval(Configuration::get('HOME_FEATURED_NBR'));
-		$products = $category->getProducts(intval($params['cookie']->id_lang), 1, ($nb ? $nb : 10), 'date_add', 'DESC');
-		$smarty->assign(array(
-			'allow_buy_when_out_of_stock'   => Configuration::get('PS_ORDER_OUT_OF_STOCK', false),
-			'max_quantity_to_allow_display' => Configuration::get('PS_LAST_QTIES'),
-			'category' => $category,
-			'products' => $products,
-			'currency' => new Currency(intval($params['cart']->id_currency)),
-			'lang' => Language::getIsoById(intval($params['cookie']->id_lang)),
-			'productNumber' => sizeof($products)
-		));*/
 		return $this->display(__FILE__, 'content.tpl');
 	}
 
     /**
-     * @param $params
+     * @param array $params
      * @return mixed
      */
     public function hookRightColumn($params)
@@ -288,7 +275,7 @@ class PrestashopChamilo extends Module
     }
 
     /**
-     * @param $params
+     * @param array $params
      */
     public function hookOrderDetail($params)
     {
@@ -324,7 +311,7 @@ class PrestashopChamilo extends Module
             $features   = $my_product->getFeatures();
             if (!empty($features)) {
                 foreach($features as $feature) {
-                    if ($feature['id_feature'] == $chamilo_feature_id ) {
+                    if ($feature['id_feature'] == $chamilo_feature_id) {
                         $feature_value = new FeatureValue($feature['id_feature_value']);
                         $course_code_list[] = $feature_value->value[$lang_id];
                         break;
@@ -355,7 +342,7 @@ class PrestashopChamilo extends Module
             $chamilo_user_id = $chamilo_user_data['user_id'];
         }
 
-        //Login generation - firstname (30 len char) + PS customer id
+        // Login generation - firstname (30 len char) + PS customer id
         $parts = explode("@", $customer->email);
         $username = $parts[0];
         $login = substr(strtolower($username),0,30).$customer->id;
@@ -456,7 +443,7 @@ class PrestashopChamilo extends Module
                     '{firstname}' => $customer->firstname,
                     '{lastname}' => $customer->lastname,
                     '{chamilo_url}' => $this->chamilo_url,
-                    '{site}'        => Configuration::get('PS_SHOP_NAME'),
+                    '{site}' => Configuration::get('PS_SHOP_NAME'),
                 );
                 /* Email sending */
                 if ($this->debug) error_log('Sending message');
@@ -480,13 +467,14 @@ class PrestashopChamilo extends Module
         }
 
         if (!empty($chamilo_user_id)) {
-            foreach($course_code_list as $course_code) {
-                if ($this->debug) error_log('Subscribing user to the course : '.$course_code);
+            foreach ($course_code_list as $course_code) {
+                if ($this->debug) error_log('Subscribing user to the course: '.$course_code);
                 //if ($this->debug) error_log('Chamilo user was registered with user_id = '.$chamilo_user_id);
-                $chamilo_params = array (
-                    'course'     => $course_code,
-                    'user_id'    => $chamilo_user_id,
-                    'secret_key' => $this->sha1 //required, secret key ("your IP address and security key from dokeos") encrypted with sha1
+                $chamilo_params = array(
+                    'course' => $course_code,
+                    'user_id' => $chamilo_user_id,
+                    'secret_key' => $this->sha1
+                    //required, secret key ("your IP address and security key from chamilo") encrypted with sha1
                 );
                 $result = $client->call(
                     'WSSubscribeUserToCourseSimple',

@@ -1,6 +1,6 @@
-Chamilo 1.8 plugin for Prestashop
-Copyright (c) 2011-2011  BeezNest Latino SAC
-	
+Chamilo plugin for Prestashop
+Copyright (c) 2011-2016  BeezNest Latino SAC
+
 The full license can be read in "license.html".
 
 This program is free software: you can redistribute it and/or modify
