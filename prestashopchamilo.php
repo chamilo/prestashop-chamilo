@@ -154,20 +154,23 @@ class PrestashopChamilo extends Module
      public function displayForm()
      {
          $client = new nusoap_client($this->wsdl, true);
-         $params = array('secret_key' => $this->sha1);
-         $courseList = $client->call(
-             'WSListCourses',
-             $params
+         $params = array(
+             'secret_key' => $this->sha1,
+             'from' => 0,
+             'to' => 10
          );
 
-         //var_dump($client, $courseList);
+         $courseList = $client->call(
+             'WSListCourses',
+             array('listCourseInput' => $params)
+         );
 
         //$output .= 'To edit this values go to the modules/chamilo/chamilo.php file<br /><br />';
         $output = '<fieldset><legend>'.$this->l('Chamilo Settings').'</legend>';
 
         if (!empty($this->chamilo_url)) {
             $output .= '<label>'.$this->l('Chamilo URL').'</label><div class="margin-form"><a href="'.$this->chamilo_url.'" target="_blank">'.$this->chamilo_url.'</a></div>';
-            $output .= '<label>'.$this->l('Chamilo WSDL').'</label><div class="margin-form"><a href="'.$this->wsdl.'"        target="_blank">'.$this->wsdl.'</a></div>';
+            $output .= '<label>'.$this->l('Chamilo WSDL').'</label><div class="margin-form"><a href="'.$this->wsdl.'" target="_blank">'.$this->wsdl.'</a></div>';
         }
         $chamilo_host_ip = Configuration::get('PS_CHAMILO_HOST_IP');
         if (empty($chamilo_host_ip)) {
@@ -195,7 +198,7 @@ class PrestashopChamilo extends Module
         $output .= '</fieldset><br />';
 
         if (!empty($courseList)) {
-            $output .= '<fieldset><legend>'.$this->l('Chamilo Available courses').'</legend>';
+            $output .= '<fieldset><legend>'.$this->l('Chamilo first 10 courses').'</legend>';
             $output .= '<table class="table"><tr>';
             $output .= '<th>'.$this->l('Title').'</th>';
             $output .= '<th>'.$this->l('Code').'</th>';
@@ -212,7 +215,6 @@ class PrestashopChamilo extends Module
         }
 
         $output .= '</fieldset>';
-
         $soapError = $client->getError();
 
         if (!empty($soapError)) {

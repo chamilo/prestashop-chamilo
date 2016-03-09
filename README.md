@@ -4,35 +4,37 @@ Instructions to install
 
 ## Prerequisites
 
- - Works with PrestaShop 1.6.1.1 at least (make sure e-mail sending works)
+ - Works with PrestaShop 1.6.1.4 at least (make sure e-mail sending works)
  - Works with Chamilo 1.10.x (with courses created) 
    
 1. Install the PrestaShop - Chamilo module
     Follow the standard steps to install a module in PrestaShop.
-    Upload the zip file and click on "Install".    
-
+    The module will appear in the "Others" tab.
+    Click on "Install".
+    
 2. Configure the module
-    Click "Other modules" -> "Chamilo" -> "Configure"
-    You'll see a form with the following params to fill:
+    After installation, you'll see a form with the following params to fill:        
 
-    - Chamilo URL : Public URL of the Chamilo portal (with a slash at the end)
-    - Chamilo Security key : Alphanumerical value. You'll find it in Chamilo's main/inc/conf/configuration.php file
-    - Chamilo encrypted method : sha1 or md5. Rewiew the value it has in Chamilo's main/inc/conf/configuration.php file
+    - Chamilo URL: Public URL of the Chamilo portal (with a slash at the end). Example http://stable.chamilo.com/
+    - Chamilo Security key: Alphanumerical value. You'll find it in Chamilo's main/inc/conf/configuration.php file
+    - Chamilo encrypted method: sha1 or md5. Get the value in Chamilo's main/inc/conf/configuration.php file
     - Your public IP : Public IP of the server on which *PrestaShop* is installed (it is part of the authentication key, so Chamilo requires it)
  
     After saving the params, you'll find the list of courses extracted from the Chamilo portal on the same page.
     This means the module has been configured correctly. Make sure your Chamilo has courses created.
+    
+    If you want to edit those values again go to the Module page, click on "Other" tab then  -> "Chamilo" -> "Configure"
      
 3. Set a product up for sale
  
-    a. In PrestaShop, login as admin and go to "Catalog" -> "Add a new product"
-    b. Complete the forum and click the "Save" button
-    c. On the same form, click on "Features". Make sure these are the product parameters and not the system's
+    a. In PrestaShop, login as admin and go to "Catalog" -> "Product" -> "Add a new product".
+    b. Complete the form and click the "Save" button.
+    c. On the same form, click on "Features". Make sure these are the product parameters and not the system's.
     d. A list of params appears: Height, Width, ... and CHAMILO_CODE
-    e. Add the Chamilo course code there. This way, the product will be linked to the corresponding Chamilo course
+    e. Add the Chamilo course code there. This way, the product will be linked to the corresponding Chamilo course.
     
-4. Test
-    Test as a customer user in PrestaShop and try to buy a product that you have configured with the CHAMILO_CODE setting
+4. Test.
+    Test as a customer user in PrestaShop and try to buy a product that you have configured with the CHAMILO_CODE setting.
     The Chamilo module will send e-mails when the order has been confirmed.
 
 5. Accept the payment
@@ -44,7 +46,6 @@ Instructions to install
 6. The End 
     Congrats! You can now sell your Chamilo courses using Chamilo.
     
-
 ## Important to know:
 
  - Chamilo login
