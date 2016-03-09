@@ -1,6 +1,8 @@
-Instructions to install the Prestashop-Chamilo module
+# Prestashop - Chamilo
 
-Prerequisites
+Instructions to install 
+
+## Prerequisites
 
  - Works with PrestaShop 1.6.1.1 at least (make sure e-mail sending works)
  - Works with Chamilo 1.10.x (with courses created) 
@@ -43,7 +45,7 @@ Prerequisites
     Congrats! You can now sell your Chamilo courses using Chamilo.
     
 
-Important to know:
+## Important to know:
 
  - Chamilo login
 

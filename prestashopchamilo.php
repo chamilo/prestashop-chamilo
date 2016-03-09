@@ -1,48 +1,55 @@
 <?php
 /* For licensing terms, see /license.txt */
+
 /**
- * Prestashop - Chamilo 1.8.8 module integration
+ * Prestashop - Chamilo 1.10.x module integration
  * Sell Chamilo courses in your Prestashop
  *
- * @author Julio Montoya <gugli100@gmail.com> Beeznest 2011
+ * @author Julio Montoya <gugli100@gmail.com> Beeznest 2016
  *
  */
 
-require_once _PS_ROOT_DIR_.'/modules/chamilo/nusoap/class.nusoap_base.php';
-require_once _PS_ROOT_DIR_.'/modules/chamilo/nusoap/class.soap_parser.php';
-require_once _PS_ROOT_DIR_.'/modules/chamilo/nusoap/class.xmlschema.php';
-require_once _PS_ROOT_DIR_.'/modules/chamilo/nusoap/class.soap_transport_http.php';
-require_once _PS_ROOT_DIR_.'/modules/chamilo/nusoap/class.wsdl.php';
-require_once _PS_ROOT_DIR_.'/modules/chamilo/nusoap/class.soapclient.php';
+if (!defined('_PS_VERSION_'))
+    exit;
+
+require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.nusoap_base.php';
+require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.soap_parser.php';
+require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.xmlschema.php';
+require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.soap_transport_http.php';
+require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.wsdl.php';
+require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.soapclient.php';
 
 /**
  * Class chamilo
  */
-class chamilo extends Module
+class PrestashopChamilo extends Module
 {
-    var $chamilo_url;
-    var $chamilo_security_key;
-    var $encrypt_method;
-    var $ip;
-    var $sha1;
+    public $chamilo_url;
+    public $chamilo_security_key;
+    public $encrypt_method;
+    public $ip;
+    public $sha1;
 
     public function __construct()
     {
         $this->refreshChamiloValues();
 
         // Module configuration
-        $this->name = 'chamilo';
-        $this->tab = 'Tools';
-        $this->version = "1.3.1";
+        $this->name = 'prestashopchamilo';
+        $this->tab = 'others';
+        $this->version = "1.4";
+        $this->author = 'Chamilo';
+        $this->need_instance = 0;
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->bootstrap = true;
         $this->wsdl = $this->chamilo_url.'/main/webservices/registration.soap.php?wsdl';
         $this->debug = true;
-
         parent::__construct();
 
-        /* The parent construct is required for translations */
-        $this->page = basename(__FILE__, '.php');
-        $this->displayName = $this->l('Chamilo 1.9.x/1.10.x Module');
+
+        $this->displayName = $this->l('Chamilo 1.10.x Module');
         $this->description = $this->l('Let users buy Chamilo courses in your PS platform!');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
     }
 
     /**
@@ -88,7 +95,7 @@ class chamilo extends Module
     /**
      * @return bool
      */
-    function installDB()
+    public function installDB()
     {
         //Creating chamilo - prestashop tables
         /*$create_table = '
@@ -109,13 +116,19 @@ class chamilo extends Module
         return true;
     }
 
-    function uninstall()
+    /**
+     * @return bool
+     */
+    public function uninstall()
     {
         if (!parent::uninstall() || !$this->uninstallDB())
             return false;
         return true;
     }
 
+    /**
+     * @return bool
+     */
     function uninstallDB()
     {
         //Dropping table
@@ -135,6 +148,9 @@ class chamilo extends Module
         return true;
     }
 
+    /**
+     * @return string
+     */
      public function displayForm()
      {
          $client = new nusoap_client($this->wsdl, true);
@@ -206,6 +222,9 @@ class chamilo extends Module
         return $output;
     }
 
+    /**
+     * @return string
+     */
     public function getContent()
     {
         $output = '<h2>'.$this->displayName.'</h2>';
@@ -235,8 +254,11 @@ class chamilo extends Module
         return $output.$this->displayForm();
     }
 
-
-    function hookHome($params)
+    /**
+     * @param $params
+     * @return mixed
+     */
+    public function hookHome($params)
     {
 		global $smarty;
 		/*$category = new Category(1);
@@ -254,16 +276,27 @@ class chamilo extends Module
 		return $this->display(__FILE__, 'content.tpl');
 	}
 
-    function hookRightColumn($params)
+    /**
+     * @param $params
+     * @return mixed
+     */
+    public function hookRightColumn($params)
     {
 	    return $this->hookHome($params);
     }
 
+    /**
+     * @param $params
+     */
     public function hookOrderDetail($params)
     {
       //  var_dump($params);exit;
     }
 
+    /**
+     * @param $params
+     * @return bool
+     */
     public function hookPaymentConfirm($params)
     {
         $order = new Order($params['id_order']);
@@ -512,7 +545,7 @@ class chamilo extends Module
      * @todo implement this in Chamilo
      * @return string the generated password
      */
-    function generate_password($length = 8)
+    public function generate_password($length = 8)
     {
         $characters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         if ($length < 2) {
