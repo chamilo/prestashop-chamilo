@@ -37,7 +37,7 @@ class PrestashopChamilo extends Module
         // Module configuration
         $this->name = 'prestashopchamilo';
         $this->tab = 'others';
-        $this->version = "1.4";
+        $this->version = "1.4.1";
         $this->author = 'Chamilo';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
@@ -45,7 +45,6 @@ class PrestashopChamilo extends Module
         $this->wsdl = $this->chamilo_url.'/main/webservices/registration.soap.php?wsdl';
         $this->debug = true;
         parent::__construct();
-
 
         $this->displayName = $this->l('Chamilo 1.10.x Module');
         $this->description = $this->l('Let users buy Chamilo courses in your PS platform!');
@@ -129,7 +128,7 @@ class PrestashopChamilo extends Module
     /**
      * @return bool
      */
-    function uninstallDB()
+    public function uninstallDB()
     {
         //Dropping table
         //Db::getInstance()->Execute('DROP TABLE `'._DB_PREFIX_.'customer_chamilo `;');
@@ -153,17 +152,17 @@ class PrestashopChamilo extends Module
      */
      public function displayForm()
      {
-         $client = new nusoap_client($this->wsdl, true);
-         $params = array(
-             'secret_key' => $this->sha1,
-             'from' => 0,
-             'to' => 10
-         );
+        $client = new nusoap_client($this->wsdl, true);
+        $params = array(
+            'secret_key' => $this->sha1,
+            'from' => 0,
+            'to' => 10
+        );
 
-         $courseList = $client->call(
+        $courseList = $client->call(
              'WSListCourses',
              array('listCourseInput' => $params)
-         );
+        );
 
         //$output .= 'To edit this values go to the modules/chamilo/chamilo.php file<br /><br />';
         $output = '<fieldset><legend>'.$this->l('Chamilo Settings').'</legend>';
@@ -172,28 +171,30 @@ class PrestashopChamilo extends Module
             $output .= '<label>'.$this->l('Chamilo URL').'</label><div class="margin-form"><a href="'.$this->chamilo_url.'" target="_blank">'.$this->chamilo_url.'</a></div>';
             $output .= '<label>'.$this->l('Chamilo WSDL').'</label><div class="margin-form"><a href="'.$this->wsdl.'" target="_blank">'.$this->wsdl.'</a></div>';
         }
+
         $chamilo_host_ip = Configuration::get('PS_CHAMILO_HOST_IP');
         if (empty($chamilo_host_ip)) {
             $chamilo_host_ip = $_SERVER['SERVER_ADDR'];
         }
+
         $output .='
-            <form action="'.$_SERVER['REQUEST_URI'].'" method="post">
-            <div class="margin-form">
-                <br class="clear"/>
-                <label for="chamilo_url">'.$this->l('Chamilo URL').'&nbsp;&nbsp;</label>
-                <input size="50px" type="text" name="chamilo_url" value="'.stripslashes(html_entity_decode(Configuration::get('PS_CHAMILO_URL'))).'" />
-                <br class="clear"/><br />
-                <label for="chamilo_secret_key">'.$this->l('Chamilo Security key').'&nbsp;&nbsp;</label>
-                <input size="50px" type="text" name="chamilo_secret_key" value="'.stripslashes(html_entity_decode(Configuration::get('PS_CHAMILO_SECRET_KEY'))).'" />
-                <br /><br class="clear"/><br />
-                <label for="chamilo_encrypt_method">'.$this->l('Chamilo encrypted method').'&nbsp;&nbsp;</label>
-                <input type="text" name="chamilo_encrypt_method" value="'.stripslashes(html_entity_decode(Configuration::get('PS_CHAMILO_ENCRYPT_METHOD'))).'" />
-                <i>(sha1 or md5)</i><br class="clear"/><br />
-                <label for="chamilo_host_ip">'.$this->l('Your public IP').'&nbsp;&nbsp;</label>
-                <input type="text" name="chamilo_host_ip" value="'.stripslashes(html_entity_decode($chamilo_host_ip)).'" />
-            </div>
-            <center><input type="submit" name="submitChamilo" value="'.$this->l('Save').'" class="button" /></center>
-            </form>';
+        <form action="'.$_SERVER['REQUEST_URI'].'" method="post">
+        <div class="margin-form">
+            <br class="clear"/>
+            <label for="chamilo_url">'.$this->l('Chamilo URL').'&nbsp;&nbsp;</label>
+            <input size="50px" type="text" name="chamilo_url" value="'.stripslashes(html_entity_decode(Configuration::get('PS_CHAMILO_URL'))).'" />
+            <br class="clear"/><br />
+            <label for="chamilo_secret_key">'.$this->l('Chamilo Security key').'&nbsp;&nbsp;</label>
+            <input size="50px" type="text" name="chamilo_secret_key" value="'.stripslashes(html_entity_decode(Configuration::get('PS_CHAMILO_SECRET_KEY'))).'" />
+            <br /><br class="clear"/><br />
+            <label for="chamilo_encrypt_method">'.$this->l('Chamilo encrypted method').'&nbsp;&nbsp;</label>
+            <input type="text" name="chamilo_encrypt_method" value="'.stripslashes(html_entity_decode(Configuration::get('PS_CHAMILO_ENCRYPT_METHOD'))).'" />
+            <i>(sha1 or md5)</i><br class="clear"/><br />
+            <label for="chamilo_host_ip">'.$this->l('Your public IP').'&nbsp;&nbsp;</label>
+            <input type="text" name="chamilo_host_ip" value="'.stripslashes(html_entity_decode($chamilo_host_ip)).'" />
+        </div>
+        <center><input type="submit" name="submitChamilo" value="'.$this->l('Save').'" class="button" /></center>
+        </form>';
 
         $output .= '</fieldset><br />';
 
@@ -220,6 +221,33 @@ class PrestashopChamilo extends Module
         if (!empty($soapError)) {
             $output .= $soapError;
         }
+
+        $client = new nusoap_client($this->wsdl, true);
+        $params = array(
+         'secret_key' => $this->sha1,
+         'from' => 0,
+         'to' => 10
+        );
+
+        $sessionList = $client->call(
+         'WSListSessions',
+         array('input' => $params)
+        );
+
+        if (!empty($sessionList)) {
+            $output .= '<fieldset><legend>'.$this->l('Chamilo first 10 Sessions').'</legend>';
+            $output .= '<table class="table"><tr>';
+            $output .= '<th>'.$this->l('Title').'</th>';
+            $output .= '<th>'.$this->l('Code').'</th>';
+            $output .= '</tr>';
+            foreach ($sessionList as $session) {
+                $output .= '<tr><td>'.$session['title'].'</td>';
+                $output .= '<td>SESSION_'.$session['id'].'</td>';
+            }
+                $output .= '</table>';
+            } else {
+                $output .= $this->l('No Chamilo session found.');
+            }
 
         return $output;
     }
@@ -295,37 +323,45 @@ class PrestashopChamilo extends Module
 
         $client = new nusoap_client($this->wsdl, true);
 
-        //Getting PS customer
+        // Getting PS customer
         $customer = new Customer($order->id_customer);
 
-        //Getting default PS parameters
-        $parameters = Configuration::getMultiple(array('PS_LANG_DEFAULT','CHAMILO_FEATURE_ID'));
+        // Getting default PS parameters
+        $parameters = Configuration::getMultiple(array('PS_LANG_DEFAULT', 'CHAMILO_FEATURE_ID'));
         $lang_id = $parameters['PS_LANG_DEFAULT'];
         $chamilo_feature_id = $parameters['CHAMILO_FEATURE_ID'];
 
-        //Getting Chamilo course code in the product list
+        // Getting Chamilo course code in the product list
         $product_list = $order->getProducts();
-        $course_code_list = array();
+        $courseCodeList = array();
+        $sessionList = array();
         foreach ($product_list  as $product) {
             $my_product = new Product($product['product_id']);
-            $features   = $my_product->getFeatures();
+            $features = $my_product->getFeatures();
             if (!empty($features)) {
-                foreach($features as $feature) {
+                foreach ($features as $feature) {
                     if ($feature['id_feature'] == $chamilo_feature_id) {
                         $feature_value = new FeatureValue($feature['id_feature_value']);
-                        $course_code_list[] = $feature_value->value[$lang_id];
+                        $value = $feature_value->value[$lang_id];
+                        if (substr($value, 0, 8) == 'SESSION_') {
+                            $sessionList[] = str_replace('SESSION_', '', $value);
+                        } else {
+                            $courseCodeList[] = $value;
+                        }
                         break;
                     }
                 }
             }
         }
 
-        if (empty($course_code_list)) {
-            if ($this->debug) error_log('Course code list is empty nothing to create');
+        if (empty($courseCodeList) && empty($sessionList)) {
+            if ($this->debug) error_log('Course code and sessionlist are empty, nothing to create');
+
             return true;
         }
 
-        if ($this->debug) error_log(print_r($course_code_list, 1));
+        if ($this->debug) error_log(print_r($courseCodeList, 1));
+        if ($this->debug) error_log(print_r($sessionList, 1));
 
         // Check if the PS customer have already an account in Chamilo
         $chamilo_params = array(
@@ -346,7 +382,7 @@ class PrestashopChamilo extends Module
         $parts = explode("@", $customer->email);
         $username = $parts[0];
         $login = substr(strtolower($username),0,30).$customer->id;
-                // User does not have a Chamilo account we proceed to create it
+        // User does not have a Chamilo account we proceed to create it
         if (empty($chamilo_user_id)) {
             if ($this->debug) error_log('PS Customer does not exist in Chamilo proceed the creation of the Chamilo user');
 
@@ -467,7 +503,7 @@ class PrestashopChamilo extends Module
         }
 
         if (!empty($chamilo_user_id)) {
-            foreach ($course_code_list as $course_code) {
+            foreach ($courseCodeList as $course_code) {
                 if ($this->debug) error_log('Subscribing user to the course: '.$course_code);
                 //if ($this->debug) error_log('Chamilo user was registered with user_id = '.$chamilo_user_id);
                 $chamilo_params = array(
@@ -497,6 +533,39 @@ class PrestashopChamilo extends Module
                         if ($this->debug) error_log(print_r($result,1));
                     }
                 }
+            }
+
+            foreach ($sessionList as $sessionId) {
+                if ($this->debug) error_log('Subscribing user to the session: '.$sessionId);
+
+                $params = array(
+                    'session' => $sessionId,
+                    'user_id' => $chamilo_user_id,
+                    'secret_key' => $this->sha1
+                );
+
+                $result = $client->call(
+                    'WSSubscribeUserToSessionSimple',
+                    array('subscribeUserToSessionSimple' => $params)
+                );
+
+                if ($client->fault) {
+                    if ($this->debug) error_log('Fault');
+                    if ($this->debug) error_log(print_r($result, 1));
+                } else {
+                    // Check for errors
+                    $err = $client->getError();
+                    if ($err) {
+                        // Display the error
+                        if ($this->debug) error_log('Error');
+                        if ($this->debug) error_log(print_r($err,1));
+                    } else {
+                        if ($this->debug) error_log('Ok');
+                        // Display the result
+                        if ($this->debug) error_log(print_r($result,1));
+                    }
+                }
+
             }
         } else {
             if ($this->debug) error_log('Error while trying to create a Chamilo user :  '.print_r($chamilo_params, 1));
