@@ -9,8 +9,9 @@
  *
  */
 
-if (!defined('_PS_VERSION_'))
+if (!defined('_PS_VERSION_')) {
     exit;
+}
 
 require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.nusoap_base.php';
 require_once _PS_ROOT_DIR_.'/modules/prestashopchamilo/nusoap/class.soap_parser.php';
@@ -107,9 +108,9 @@ class PrestashopChamilo extends Module
         ) DEFAULT CHARSET=utf8;';
         Db::getInstance()->Execute($create_table);*/
 
-        //Creating a new feature
+        // Creating a new feature
         $id = Feature::addFeatureImport('CHAMILO_CODE');
-        //Creating configuration value
+        // Creating configuration value
         Configuration::updateValue('CHAMILO_FEATURE_ID', $id);
 
         return true;
@@ -120,8 +121,9 @@ class PrestashopChamilo extends Module
      */
     public function uninstall()
     {
-        if (!parent::uninstall() || !$this->uninstallDB())
+        if (!parent::uninstall() || !$this->uninstallDB()) {
             return false;
+        }
         return true;
     }
 
@@ -132,7 +134,8 @@ class PrestashopChamilo extends Module
     {
         //Dropping table
         //Db::getInstance()->Execute('DROP TABLE `'._DB_PREFIX_.'customer_chamilo `;');
-        //Removing feature
+
+        // Removing feature
         $chamilo_feature_id = Configuration::get('CHAMILO_FEATURE_ID');
         $feature = new Feature($chamilo_feature_id);
         $feature->delete();
@@ -168,7 +171,8 @@ class PrestashopChamilo extends Module
         $output = '<fieldset><legend>'.$this->l('Chamilo Settings').'</legend>';
 
         if (!empty($this->chamilo_url)) {
-            $output .= '<label>'.$this->l('Chamilo URL').'</label><div class="margin-form"><a href="'.$this->chamilo_url.'" target="_blank">'.$this->chamilo_url.'</a></div>';
+            $output .= '<label>'.$this->l('Chamilo URL').'</label>
+            <div class="margin-form"><a href="'.$this->chamilo_url.'" target="_blank">'.$this->chamilo_url.'</a></div>';
             $output .= '<label>'.$this->l('Chamilo WSDL').'</label><div class="margin-form"><a href="'.$this->wsdl.'" target="_blank">'.$this->wsdl.'</a></div>';
         }
 
@@ -193,7 +197,7 @@ class PrestashopChamilo extends Module
             <label for="chamilo_host_ip">'.$this->l('Your public IP').'&nbsp;&nbsp;</label>
             <input type="text" name="chamilo_host_ip" value="'.stripslashes(html_entity_decode($chamilo_host_ip)).'" />
         </div>
-        <center><input type="submit" name="submitChamilo" value="'.$this->l('Save').'" class="button" /></center>
+        <center><input type="submit" name="submitChamilo" value="'.$this->l('Save').'" class="btn btn-default" /></center>
         </form>';
 
         $output .= '</fieldset><br />';
@@ -224,15 +228,12 @@ class PrestashopChamilo extends Module
 
         $client = new nusoap_client($this->wsdl, true);
         $params = array(
-         'secret_key' => $this->sha1,
-         'from' => 0,
-         'to' => 10
+            'secret_key' => $this->sha1,
+            'from' => 0,
+            'to' => 10
         );
 
-        $sessionList = $client->call(
-         'WSListSessions',
-         array('input' => $params)
-        );
+        $sessionList = $client->call('WSListSessions', array('input' => $params) );
 
         if (!empty($sessionList)) {
             $output .= '<fieldset><legend>'.$this->l('Chamilo first 10 Sessions').'</legend>';
@@ -307,7 +308,6 @@ class PrestashopChamilo extends Module
      */
     public function hookOrderDetail($params)
     {
-      //  var_dump($params);exit;
     }
 
     /**
@@ -565,7 +565,6 @@ class PrestashopChamilo extends Module
                         if ($this->debug) error_log(print_r($result,1));
                     }
                 }
-
             }
         } else {
             if ($this->debug) error_log('Error while trying to create a Chamilo user :  '.print_r($chamilo_params, 1));
